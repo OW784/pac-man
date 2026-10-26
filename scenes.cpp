@@ -19,7 +19,14 @@ void MenuScene::load() {
     text.setString("Almost Pacman");
     text.setCharacterSize(40);
     text.setFillColor(sf::Color::Yellow);
-    text.setPosition(200.f, 250.f);
+    
+    sf::FloatRect bounds = text.getLocalBounds();
+    text.setOrigin(
+        bounds.left + bounds.width / 2.f,
+        bounds.top + bounds.height / 2.f
+    );
+
+    text.setPosition(400.f, 170.f);
 }
 
 void MenuScene::update(const float& dt) {
