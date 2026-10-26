@@ -1,0 +1,22 @@
+# CMake build files
+/build/
+/out/
+/cmake-build-*/
+
+# Visual Studio temporary files
+.vs/
+*.user
+*.suo
+
+# Compiled files
+*.obj
+*.o
+*.exe
+*.dll
+*.pdb
+*.ilk
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
