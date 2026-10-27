@@ -9,6 +9,11 @@ private:
     sf::Text text;
     sf::Font font;
 
+    sf::RectangleShape playButton;
+    sf::RectangleShape quitButton;
+
+    sf::Text playText;
+    sf::Text quitText;
 public:
     MenuScene() = default;
 

@@ -7,12 +7,48 @@ std::shared_ptr<Scene> GameSystem::_active_scene = nullptr;
 
 sf::RenderWindow* GameSystem::_window = nullptr;
 
+void resizeView(sf::RenderWindow& window, sf::View& view)
+{
+	float windowWidth = static_cast<float>(window.getSize().x);
+	float windowHeight = static_cast<float>(window.getSize().y);
+
+	float windowRatio = windowWidth / windowHeight;
+	float viewRatio = 800.f / 600.f;
+
+	float viewportWidth = 1.f;
+	float viewportHeight = 1.f;
+	float viewportLeft = 0.f;
+	float viewportTop = 0.f;
+
+	if (windowRatio > viewRatio)
+	{
+		viewportWidth = viewRatio / windowRatio;
+		viewportLeft = (1.f - viewportWidth) / 2.f;
+	}
+	else
+	{
+		viewportHeight = windowRatio / viewRatio;
+		viewportTop = (1.f - viewportHeight) / 2.f;
+	}
+
+	view.setViewport(sf::FloatRect(
+		viewportLeft,
+		viewportTop,
+		viewportWidth,
+		viewportHeight
+	));
+
+	window.setView(view);
+}
 
 void GameSystem::start(unsigned int width, unsigned int height,
 	const std::string& name, const float& time_step) {
 	sf::RenderWindow window(sf::VideoMode({ width, height }), name);
 	_window = &window;
 	window.setFramerateLimit(60);
+
+	sf::View view(sf::FloatRect(0.f, 0.f, 800.f, 600.f));
+	resizeView(window, view);
 
 	Renderer::initialise(window);
 
@@ -24,6 +60,10 @@ void GameSystem::start(unsigned int width, unsigned int height,
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed) {
 				window.close();
+			}
+			if (event.type == sf::Event::Resized)
+			{
+				resizeView(window, view);
 			}
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
@@ -103,3 +143,7 @@ void Scene::unload() {
 	em.list.clear();
 }
 
+sf::RenderWindow* GameSystem::getWindow()
+{
+	return _window;
+}

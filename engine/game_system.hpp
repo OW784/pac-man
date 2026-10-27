@@ -35,6 +35,7 @@ public:
     static void clean();
     static void set_active_scene(const std::shared_ptr<Scene>& act_sc);
     static void resize_window(unsigned int width, unsigned int height);
+    static sf::RenderWindow* getWindow();
 
 private:
     static void _init();
