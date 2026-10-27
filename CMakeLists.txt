@@ -49,6 +49,7 @@ add_custom_target(copy_resources ALL
 add_executable(pacman
     main.cpp
     scenes.cpp
+    components.cpp
 )
 
 target_link_libraries(pacman PRIVATE

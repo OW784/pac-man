@@ -1,6 +1,9 @@
 #include "scenes.hpp"
+#include "parameters.hpp"
 #include "engine/renderer.hpp"
 #include "engine/game_system.hpp"
+#include "engine/entity.hpp"
+#include "components.hpp"
 #include <iostream>
 
 std::shared_ptr<Scene> Scenes::menu = nullptr;
@@ -131,8 +134,33 @@ void MenuScene::render() {
 // GAME SCENE
 
 void GameScene::load() {
-    // Add Pac-Man gameplay here later
+    {
+        std::shared_ptr<Entity> player = std::make_shared<Entity>();
+        auto shape = player->add_component<ShapeComponent>();
+        player->add_component<PlayerMovementComponent>();
+        shape->set_shape<sf::CircleShape>(param::entity_size);
+        shape->get_shape().setFillColor(sf::Color::Yellow);
+        shape->get_shape().setOrigin(sf::Vector2f(param::entity_size, param::entity_size));
+        em.list.push_back(player);
+    }
+    const sf::Color ghost_cols[]{ {208, 62, 25},    // red Blinky
+                               {219, 133, 28},   // orange Clyde
+                               {70, 191, 238},   // cyan Inky
+                               {234, 130, 229} };
+
+
+    for (int i = 0; i < param::ghost_count; i++) {
+        std::shared_ptr<Entity> ghost = std::make_shared<Entity>();
+        std::shared_ptr<ShapeComponent> shape = ghost->add_component<ShapeComponent>();
+        shape->set_shape<sf::CircleShape>(param::entity_size);
+        shape->get_shape().setFillColor(ghost_cols[i % param::ghost_count]);
+        shape->get_shape().setOrigin(
+            sf::Vector2f(param::entity_size, param::entity_size));
+        em.list.push_back(ghost);
+    }
+
 }
+
 
 void GameScene::update(const float& dt) {
     Scene::update(dt);
