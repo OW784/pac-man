@@ -5,6 +5,9 @@
 #include "engine/entity.hpp"
 #include "components.hpp"
 #include <iostream>
+#include "tile_level_loader/level_system.hpp"
+
+using ls = LevelSystem;
 
 std::shared_ptr<Scene> Scenes::menu = nullptr;
 std::shared_ptr<Scene> Scenes::game = nullptr;
@@ -135,9 +138,15 @@ void MenuScene::render() {
 
 void GameScene::load() {
     {
+        ls::set_offset({ 120.f, 10.f });
+        ls::set_color(ls::WALL, sf::Color(0, 40, 255));
+        ls::load_level("assets/map/pacman.txt", 20.0f);  
+
         std::shared_ptr<Entity> player = std::make_shared<Entity>();
+        _player = player;
         auto shape = player->add_component<ShapeComponent>();
         player->add_component<PlayerMovementComponent>();
+
         shape->set_shape<sf::CircleShape>(param::entity_size);
         shape->get_shape().setFillColor(sf::Color::Yellow);
         shape->get_shape().setOrigin(sf::Vector2f(param::entity_size, param::entity_size));
@@ -151,14 +160,17 @@ void GameScene::load() {
 
     for (int i = 0; i < param::ghost_count; i++) {
         std::shared_ptr<Entity> ghost = std::make_shared<Entity>();
+        _ghosts.push_back(ghost);
         std::shared_ptr<ShapeComponent> shape = ghost->add_component<ShapeComponent>();
+        ghost->add_component<EnemyAiComponent>();
+
         shape->set_shape<sf::CircleShape>(param::entity_size);
         shape->get_shape().setFillColor(ghost_cols[i % param::ghost_count]);
         shape->get_shape().setOrigin(
             sf::Vector2f(param::entity_size, param::entity_size));
         em.list.push_back(ghost);
     }
-
+    respawn();
 }
 
 
@@ -171,5 +183,29 @@ void GameScene::update(const float& dt) {
 }
 
 void GameScene::render() {
+    ls::render(Renderer::get_window());
     Scene::render();
+}
+
+void GameScene::respawn() {
+    _player->set_position(ls::get_start_position());
+
+    _player->get_compatible_component<ActorMovementComponent>()[0]
+        ->set_speed(param::player_speed);
+
+    std::vector<sf::Vector2i> ghost_spawns =
+        ls::find_tiles(ls::ENEMY);
+
+    for (size_t i = 1; i < em.list.size(); i++) {
+        std::shared_ptr<Entity>& ghost = em.list[i];
+
+        ghost->set_position(
+            ls::get_tile_position(
+                ghost_spawns[rand() % ghost_spawns.size()]
+            )
+        );
+
+        ghost->get_compatible_component<ActorMovementComponent>()[0]
+            ->set_speed(param::ghost_speed);
+    }
 }

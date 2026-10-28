@@ -34,6 +34,9 @@ public:
     void update(const float& dt) override;
     void render() override;
     void load() override;
+
+    std::shared_ptr<Entity> _player;
+    std::vector<std::shared_ptr<Entity>> _ghosts;
 };
 
 namespace Scenes {

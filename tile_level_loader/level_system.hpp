@@ -17,10 +17,12 @@ public:
 
 	static Tile get_tile(sf::Vector2i);
 	static sf::Vector2f get_tile_position(sf::Vector2i);
+	static std::vector<sf::Vector2i> find_tiles(Tile tile);
 	static Tile get_tile_at(sf::Vector2f);
 	static int get_height();
 	static int get_width();
 	static sf::Vector2f get_start_position();
+	static void set_offset(const sf::Vector2f& offset);
 
 protected:
 	static std::unique_ptr<Tile[]> _tiles;
@@ -37,7 +39,5 @@ protected:
 private:
 	LevelSystem() = delete;
 	~LevelSystem() = delete;
-
-
 
 };

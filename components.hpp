@@ -47,3 +47,14 @@ public:
     PlayerMovementComponent(Entity* p);
     void update(const float& dt) override;
 };
+
+class EnemyAiComponent : public ActorMovementComponent {
+public:
+    EnemyAiComponent(Entity* p);
+    void update(const float& dt) override;
+
+protected:
+    sf::Vector2f _direction;
+    enum state { ROAMING, ROTATING, ROTATED };
+    state _state;
+};

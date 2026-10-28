@@ -29,6 +29,10 @@ void LevelSystem::set_color(LevelSystem::Tile t, sf::Color c) {
     _colors[t] = c;
 }
 
+void LevelSystem::set_offset(const sf::Vector2f& offset) {
+    _offset = offset;
+}
+
 void LevelSystem::load_level(const std::string& path, float tile_size) {
     _tile_size = tile_size;
     int w = 0, h = 0;
@@ -113,22 +117,29 @@ void LevelSystem::build_sprites() {
 }
 
 sf::Vector2f LevelSystem::get_tile_position(sf::Vector2i p) {
-    return (sf::Vector2f(p.x, p.y) * _tile_size);
+    return (sf::Vector2f(p.x, p.y) * _tile_size + _offset);
 }
 
 LevelSystem::Tile LevelSystem::get_tile(sf::Vector2i p) {
     if (p.x > _width || p.y > _height) {
-        throw std::string("Tile out of range: ") + std::to_string(p.x) + "," + std::to_string(p.y) + ")";
+        throw std::string("Tile out of range: ")
+            + std::to_string(p.x) + ","
+            + std::to_string(p.y) + ")";
     }
+
     return _tiles[(p.y * _width) + p.x];
 }
 
 LevelSystem::Tile LevelSystem::get_tile_at(sf::Vector2f v) {
     auto a = v - _offset;
+
     if (a.x < 0 || a.y < 0) {
         throw std::string("Tile out of range ");
     }
-    return get_tile(sf::Vector2i((v - _offset) / (_tile_size)));
+
+    return get_tile(
+        sf::Vector2i((v - _offset) / (_tile_size))
+    );
 }
 
 void LevelSystem::render(sf::RenderWindow& window) {
@@ -138,3 +149,19 @@ void LevelSystem::render(sf::RenderWindow& window) {
 }
 
 sf::Vector2f LevelSystem::get_start_position() { return _start_position; }
+
+
+std::vector<sf::Vector2i> LevelSystem::find_tiles(Tile tile) {
+    std::vector<sf::Vector2i> positions;
+
+   
+    for (int y = 0; y < get_height(); ++y) {
+        for (int x = 0; x < get_width(); ++x) {
+            if (get_tile({ x, y }) == tile) {
+                positions.push_back({ x, y });
+            }
+        }
+    }
+
+    return positions;
+}
